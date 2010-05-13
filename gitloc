@@ -9,13 +9,17 @@ fc=0
 locs=0
 adds=None
 cmt=None
+
+def pop():
+	if adds is not None:
+		print "%s %8u %5s %5s %s"%(d,locs,'+'+str(adds),'-'+str(dels),cmt)
+
 for x in popen('git log --reverse -p'):
 	if x.startswith('Date'):
 		fc=1
 		d=datetime(*parsedate(x[5:])[:7])
 		t=mktime(parsedate(x[5:]))
-		if adds is not None:
-			print "%s %8u %5s %5s %s"%(d,locs,'+'+str(adds),'-'+str(dels),cmt)
+		pop()
 		adds=0
 		dels=0
 
@@ -31,3 +35,4 @@ for x in popen('git log --reverse -p'):
 		dels+=1
 		locs-=1
 
+pop()
