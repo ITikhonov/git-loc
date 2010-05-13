@@ -2,10 +2,7 @@ Simple tool to display LOC (lines of code) history for git current branch.
 
 Example:
 
-2010-05-12 14:40:54     1074    +2    -1     dict kick
-2010-05-12 14:52:03     1074    +5    -5     minor cosmetic
-2010-05-13 12:52:57     1085   +24   -13     atoms from forth
-2010-05-13 12:56:10     1095   +14    -4     display
-2010-05-13 13:07:46     1096    +4    -3     display tuneup
-
+2010-05-13 14:38:21       42   +44    -2     initial
+2010-05-13 14:40:14       44    +3    -1     hashbang added
+2010-05-13 14:40:14       49    +8    -3     show last commit too
 
