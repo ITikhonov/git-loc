@@ -1,0 +1,31 @@
+from rfc822 import parsedate
+from time import mktime
+from datetime import datetime
+from os import popen
+
+fc=0
+locs=0
+adds=None
+cmt=None
+for x in popen('git log --reverse -p'):
+	if x.startswith('Date'):
+		fc=1
+		d=datetime(*parsedate(x[5:])[:7])
+		t=mktime(parsedate(x[5:]))
+		if adds is not None:
+			print "%s %8u %5s %5s %s"%(d,locs,'+'+str(adds),'-'+str(dels),cmt)
+		adds=0
+		dels=0
+
+	if fc==2:
+		cmt=x[:-1]
+		fc=0
+	if fc==1:
+		if len(x)==1: fc=2
+	if x.startswith('+'):
+		adds+=1
+		locs+=1
+	if x.startswith('-'):
+		dels+=1
+		locs-=1
+
