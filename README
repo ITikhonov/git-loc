@@ -1,4 +1,4 @@
-Simple tool to display LOC (lines of code) history for git current branch.
+Simple tool to display LOC (lines of code) count history for git current branch.
 
 Example:
 
