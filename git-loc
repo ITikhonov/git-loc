@@ -45,12 +45,20 @@ for x in popen('git log --reverse -p'):
 pop()
 
 def makesvg():
+	def quoteone(x):
+		if x in 'abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789': return x
+		return "&#x%02x;"%(ord(x),)
+
+	def quote(s):
+		return ''.join([quoteone(x) for x in s])
+
 	mlocs=max([locs for d,locs,adds,dels,cmt in h])
+	yscale=800.0/mlocs
 
 	svg=stdout
 	svg.write("""<?xml version="1.0" standalone="no"?>"""
 		  """<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">"""
-		  """<svg width="100%%" height="100%%" viewBox="0 0 %u %u" version="1.1" xmlns="http://www.w3.org/2000/svg">"""%(25*len(h),mlocs))
+		  """<svg preserveAspectRatio="none" width="100%%" height="100%%" viewBox="0 0 %u %u" version="1.1" xmlns="http://www.w3.org/2000/svg">"""%(25*len(h),mlocs*yscale))
 
 	svg.write("""<style>"""
 		  """rect.o{opacity:0}"""
@@ -62,30 +70,35 @@ def makesvg():
 		svg.write("""<rect x="%u" y="%u" width="%u" height="%u" style="%s" %s/>"""
 				%(x,y,w,h,c,a))
 
+
 	ps=[]
 	bl=[]
 	tx=[]
 	x=25
 	for d,locs,adds,dels,cmt in h:
-		y=mlocs-locs
-		bl.append((x-1,y,3,dels,"fill:rgb(0,0,255)"))
-		bl.append((x-1,y-adds,3,adds,"fill:rgb(0,255,0)"))
+		y=(mlocs-locs)*yscale
+		bl.append((x-1,y,3,dels*yscale,"fill:rgb(0,0,255)"))
+		bl.append((x-1,y-adds*yscale,3,adds*yscale,"fill:rgb(0,255,0)"))
 
-		bl.append((x-12,0,25,mlocs,'',
-			"""title="%s %8u %5s %5s   %s" """%(d,locs,'+'+str(adds),'-'+str(dels),cmt.strip())
+		bl.append((x-12,0,25,mlocs*yscale,'',
+			"""title="%s %8u %5s %5s   %s" """%(d,locs,'+'+str(adds),'-'+str(dels),quote(cmt.strip()))
 			+"""class="o" """))
 
 		ps.append("%u,%u"%(x,y))
 		x+=25
 
-	svg.write("""<polyline points="0,%u %u,%u" class="a"/>"""%(mlocs,x,mlocs,))
-	svg.write("""<polyline points="25,0 25,%u" class="a"/>"""%(mlocs+25,))
+	svg.write("""\n""")
+	svg.write("""<polyline points="0,%u %u,%u" class="a"/>"""%(mlocs*yscale,x,mlocs*yscale,))
+	svg.write("""<polyline points="25,0 25,%u" class="a"/>"""%(mlocs*yscale+25,))
 
-	for i in range(1000,mlocs,1000):
-		svg.write("""<polyline points="0,%u %u,%u" class="a" style="stroke:grey"/>"""%(mlocs-i,x,mlocs-i,))
+	it=pow(10,len(str(mlocs))-2)
+	for i in range(it,mlocs,it):
+		svg.write("""<polyline points="0,%u %u,%u" class="a" style="stroke:rgb(200,200,200)"/>"""%(mlocs*yscale-i*yscale,x,mlocs*yscale-i*yscale,))
+		svg.write("""\n""")
 
 	for b in bl:
 		rect(*b)
+		svg.write("""\n""")
 
 	svg.write("""<polyline points="%s" class="a" style="stroke:red"/>"""%(' '.join(ps),))
 
