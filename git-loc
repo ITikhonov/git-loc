@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import re
 from rfc822 import parsedate
 from time import mktime
 from datetime import datetime
@@ -16,7 +17,7 @@ h=[]
 
 def pop():
 	if adds is not None:
-		pstr="%s %8u %5s %5s   %s"%(d,locs,'+'+str(adds),'-'+str(dels),cmt.strip())
+		pstr="%s %8u %5s %5s   %s \t%s"%(d,locs,'+'+str(adds),'-'+str(dels),who,cmt.strip())
 		if needsvg: print >>stderr,pstr
 		else: print pstr
 		h.append((d,locs,adds,dels,cmt))
@@ -29,6 +30,10 @@ for x in popen('git log --reverse -p'):
 		pop()
 		adds=0
 		dels=0
+	if x.startswith('Author'):
+		who=x.replace("Author: ",'').replace('\n','');
+                who=re.sub(">.*","",who);
+                who=re.sub(".*<","",who);
 
 	if fc==2:
 		cmt=x[:-1]
