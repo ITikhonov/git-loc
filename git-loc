@@ -23,18 +23,18 @@ def pop():
 		h.append((d,locs,adds,dels,cmt))
 
 for x in popen('git log --reverse -p'):
-	if x.startswith('Date'):
-		fc=1
-		d=datetime(*parsedate(x[5:])[:7])
-		t=mktime(parsedate(x[5:]))
+	if x.startswith('commit'):
 		pop()
-		adds=0
-		dels=0
 	if x.startswith('Author'):
 		who=x.replace("Author: ",'').replace('\n','');
                 who=re.sub(">.*","",who);
                 who=re.sub(".*<","",who);
-
+	if x.startswith('Date'):
+		fc=1
+		d=datetime(*parsedate(x[5:])[:7])
+		t=mktime(parsedate(x[5:]))
+		adds=0
+		dels=0
 	if fc==2:
 		cmt=x[:-1]
 		fc=0
