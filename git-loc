@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import re
-from rfc822 import parsedate
+from email.utils import parsedate
 from time import mktime
 from datetime import datetime
 from os import popen
@@ -18,8 +18,8 @@ h=[]
 def pop():
 	if adds is not None:
 		pstr="%s %8u %5s %5s   %s \t%s"%(d,locs,'+'+str(adds),'-'+str(dels),who,cmt.strip())
-		if needsvg: print >>stderr,pstr
-		else: print pstr
+		if needsvg: stderr.write(pstr+'\n')
+		else: print(pstr)
 		h.append((d,locs,adds,dels,cmt))
 
 for x in popen('git log --reverse -p'):
@@ -27,8 +27,8 @@ for x in popen('git log --reverse -p'):
 		pop()
 	if x.startswith('Author'):
 		who=x.replace("Author: ",'').replace('\n','');
-                who=re.sub(">.*","",who);
-                who=re.sub(".*<","",who);
+		who=re.sub(">.*","",who);
+		who=re.sub(".*<","",who);
 	if x.startswith('Date'):
 		fc=1
 		d=datetime(*parsedate(x[5:])[:7])
