@@ -7,4 +7,4 @@ Example:
 2010-05-13 14:40:14       49    +8    -3     show last commit too
 
 
-Run it as git-loc --svg to output svg graph on stdout.
+Run it as `git-loc --svg' to output svg graph on stdout.

@@ -114,6 +114,3 @@ def makesvg():
 	svg.write("""</svg>\n""")
 
 if needsvg: makesvg()
-
-
-
