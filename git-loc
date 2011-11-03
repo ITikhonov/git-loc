@@ -58,7 +58,7 @@ def makesvg():
 	def quote(s):
 		return ''.join([quoteone(x) for x in s])
 
-	mlocs=max([locs for d,locs,adds,dels,cmt in h])
+	mlocs=max([locs for d,locs,adds,dels,hsh,who,cmt in h])
 	yscale=800.0/mlocs
 
 	svg=stdout
@@ -81,7 +81,7 @@ def makesvg():
 	bl=[]
 	tx=[]
 	x=25
-	for d,locs,adds,dels,cmt in h:
+	for d,locs,adds,dels,hsh,who,cmt in h:
 		y=(mlocs-locs)*yscale
 		bl.append((x-1,y,3,dels*yscale,"fill:rgb(0,0,255)"))
 		bl.append((x-1,y-adds*yscale,3,adds*yscale,"fill:rgb(0,255,0)"))
