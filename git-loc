@@ -5,9 +5,22 @@ from email.utils import parsedate
 from time import mktime
 from datetime import datetime
 from os import popen
+import os
 from sys import argv,stderr,stdout
+import getopt
 
-needsvg=len(argv)>1 and argv[1]=='--svg'
+
+opts, args = getopt.getopt(argv[1:],None, ['svg'])
+needsvg = False
+for o, a in opts:
+    if o == "--svg":
+        needsvg = True
+extfolder = False
+if len(args) == 1:
+    extfolder = True
+    targetfolder = args[0]
+
+
 fc=0
 locs=0
 adds=None
@@ -21,6 +34,10 @@ def pop():
 		if needsvg: stderr.write(pstr+'\n')
 		else: print(pstr)
 		h.append((d,locs,adds,dels,hsh,who,cmt))
+
+prevfolder = os.getcwd()
+if extfolder:
+    os.chdir(targetfolder)
 
 for x in popen('git log --reverse -p'):
 	if x.startswith('commit'):
@@ -49,6 +66,7 @@ for x in popen('git log --reverse -p'):
 		locs-=1
 
 pop()
+os.chdir(prevfolder)
 
 def makesvg():
 	def quoteone(x):
