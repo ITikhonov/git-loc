@@ -10,4 +10,4 @@ Example:
 
 Run it as `git-loc --svg' to output svg graph on stdout.
 It is possible to specify the .git folder you wish to the repository you wish to get stats about.
-`git-log --svg ../another-repo'
+`git-loc --svg ../another-repo'
