@@ -39,7 +39,7 @@ prevfolder = os.getcwd()
 if extfolder:
     os.chdir(targetfolder)
 
-for x in popen('git log --reverse -p'):
+for x in popen('git log --no-color --reverse -p'):
 	if x.startswith('commit'):
 		pop()
 		hsh=x[7:14];
