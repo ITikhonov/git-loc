@@ -25,23 +25,36 @@ fc=0
 locs=0
 adds=None
 cmt=None
+excl=False
 
 h=[]
 
+import ConfigParser
+configfilename = os.path.join(targetfolder, ".gitlocrc")
+config = ConfigParser.ConfigParser()
+with open("gitlocrc") as f:
+    config.readfp(f)
+config.read([configfilename, os.path.expanduser('~/.gitlocrc')])
+exclusion_regexes = config.get("exclude", "regexes").splitlines()
+
 def pop():
-	if adds is not None:
-		pstr="%s %8u %5s %5s %7s %s \t%s"%(d,locs,'+'+str(adds),'-'+str(dels),hsh,who,cmt.strip())
-		if needsvg: stderr.write(pstr+'\n')
-		else: print(pstr)
-		h.append((d,locs,adds,dels,hsh,who,cmt))
+	if adds is None:
+		return
+
+	pstr="%s %8u %5s %5s %7s %s \t%s"%(d,locs,'+'+str(adds),'-'+str(dels),hsh,who,cmt.strip())
+	if needsvg: stderr.write(pstr+'\n')
+	else: print(pstr)
+	h.append((d,locs,adds,dels,hsh,who,cmt))
 
 prevfolder = os.getcwd()
 if extfolder:
-    os.chdir(targetfolder)
+	os.chdir(targetfolder)
 
 for x in popen('git log --no-color --reverse -p'):
 	if x.startswith('commit'):
-		pop()
+		if not excl:
+			pop()
+		excl = False
 		hsh=x[7:14];
 	if x.startswith('Author'):
 		who=x.replace("Author: ",'').replace('\n','');
@@ -55,13 +68,18 @@ for x in popen('git log --no-color --reverse -p'):
 		dels=0
 	if fc==2:
 		cmt=x[:-1]
+		for regex in exclusion_regexes:
+			cmt2 = cmt.strip().lstrip()
+			#print "Matching `%s' to `%s'" % (regex, cmt)
+			if re.match(regex, cmt2):
+				excl = True
 		fc=0
 	if fc==1:
 		if len(x)==1: fc=2
-	if x.startswith('+') and not x.startswith('+++'):
+	if not excl and x.startswith('+') and not x.startswith('+++'):
 		adds+=1
 		locs+=1
-	if x.startswith('-') and not x.startswith('---'):
+	if not excl and x.startswith('-') and not x.startswith('---'):
 		dels+=1
 		locs-=1
 
