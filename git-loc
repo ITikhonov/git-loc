@@ -46,11 +46,13 @@ def pop():
 	else: print(pstr)
 	h.append((d,locs,adds,dels,hsh,who,cmt))
 
-prevfolder = os.getcwd()
+gitopts = ''
 if extfolder:
-	os.chdir(targetfolder)
+        gitopts+='--git-dir='+targetfolder+'/.git'
+gitlogopts = '--no-color --date-order --reverse -p'
+gitcmd = 'git '+gitopts+' log '+gitlogopts
 
-for x in popen('git log --no-color --reverse -p'):
+for x in popen(gitcmd):
 	if x.startswith('commit'):
 		if not excl:
 			pop()
@@ -84,7 +86,6 @@ for x in popen('git log --no-color --reverse -p'):
 		locs-=1
 
 pop()
-os.chdir(prevfolder)
 
 def makesvg():
 	def quoteone(x):
